@@ -9,12 +9,12 @@ Thumbs.db
 .workbuddy/
 
 # Local preview, screenshots, and duplicate offline delivery
-/designs/woody-frames/qa/
-/designs/woody-frames/Woody Frames.html
+/qa/
+/Woody Frames.html
 /outputs/
 
 # Keep the optimized web copies, not the separate original downloads
-/designs/woody-frames/assets/*.jpg
+/assets/*.jpg
 
 # Future build output and dependencies
 node_modules/
