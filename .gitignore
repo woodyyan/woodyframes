@@ -1,0 +1,31 @@
+# macOS and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Local WorkBuddy project data (not a disposable cache)
+.workbuddy/
+
+# Local preview, screenshots, and duplicate offline delivery
+/designs/woody-frames/qa/
+/designs/woody-frames/Woody Frames.html
+/outputs/
+
+# Keep the optimized web copies, not the separate original downloads
+/designs/woody-frames/assets/*.jpg
+
+# Future build output and dependencies
+node_modules/
+dist/
+.astro/
+.vercel/
+*.log
+
+# Credentials and environment-specific settings
+.env
+.env.*
+!.env.example
+*.pem
+*.key

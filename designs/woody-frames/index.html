@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f7f6f2">
+  <meta name="description" content="Woody’s Frames — 收藏目光停留过的地方。个人摄影网站设计原型，使用 Pexels 授权示例照片。">
+  <title>Woody’s Frames — 目光停留的地方</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23f7f6f2'/%3E%3Cpath d='M10 24V10h14M40 10h14v14M54 40v14H40M24 54H10V40' fill='none' stroke='%2327221c' stroke-width='4'/%3E%3C/svg%3E">
+  <style>
+    :root { --paper:#f7f6f2; --surface:#fffefa; --ink:#27241f; --muted:#716d65; --rule:#dcd9d1; --accent:#735f48; --serif:"Baskerville","Iowan Old Style","Palatino Linotype","Songti SC",serif; --sans:"Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif; --mono:"SFMono-Regular","Menlo",monospace; --gutter:clamp(22px,5vw,88px); --gallery-gap:32px; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; scrollbar-gutter:stable; }
+    body { margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans); -webkit-font-smoothing:antialiased; }
+    button,a { -webkit-tap-highlight-color:transparent; }
+    button { font:inherit; color:inherit; cursor:pointer; }
+    a { color:inherit; text-decoration:none; }
+    button:focus-visible,a:focus-visible { outline:2px solid var(--accent); outline-offset:5px; }
+    button { border:0; background:none; }
+    svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
+    .shell { max-width:1720px; margin-inline:auto; padding-inline:var(--gutter); }
+    .mono { font-family:var(--mono); font-size:10px; font-weight:400; letter-spacing:.11em; }
+    .skip { position:fixed; z-index:20; top:-80px; left:20px; padding:16px; background:var(--surface); }
+    .skip:focus { top:12px; }
+    .masthead { display:flex; justify-content:space-between; align-items:center; min-height:96px; border-bottom:1px solid var(--rule); gap:24px; }
+    .signature { display:flex; gap:12px; align-items:center; }
+    .signature svg { width:25px; height:25px; stroke-width:1.2; }
+    .signature span { font-family:var(--serif); font-size:25px; letter-spacing:-.6px; }
+    .nav { display:flex; align-items:center; gap:36px; }
+    .nav a { font-size:13px; display:flex; align-items:center; gap:16px; min-height:44px; }
+    .nav .mono { color:var(--muted); }
+    .intro { display:grid; grid-template-columns:1fr auto; align-items:end; gap:32px; padding-block:58px 44px; }
+    .eyebrow { display:flex; align-items:center; gap:12px; margin:0 0 20px; color:var(--muted); font-size:10px; }
+    .eyebrow::before { content:""; width:25px; height:1px; background:var(--muted); }
+    h1 { font-family:var(--serif); font-size:clamp(58px,8.4vw,144px); font-weight:400; line-height:.95; letter-spacing:-.055em; margin:0; }
+    h1 em { font-weight:400; }
+    .intro-copy { padding-bottom:3px; display:flex; flex-direction:column; gap:14px; }
+    .intro-copy p { margin:0; font-size:14px; color:var(--muted); letter-spacing:.06em; }
+    .intro-copy .english { font-size:11px; letter-spacing:.01em; }
+    .hero { margin:0; }
+    .hero-open { width:100%; padding:0; display:block; position:relative; overflow:hidden; background:#cbd0ca; }
+    .hero-open > img { width:100%; height:auto; display:block; aspect-ratio:2.65; object-fit:cover; object-position:50% 57%; transition:transform .8s ease; }
+    .hero-open:hover > img { transform:scale(1.012); }
+    .hero-mark { position:absolute; width:22px; height:22px; border-color:rgba(255,255,255,.65); border-style:solid; pointer-events:none; }
+    .hero-mark.tl { left:23px; top:23px; border-width:1px 0 0 1px; }
+    .hero-mark.br { right:23px; bottom:23px; border-width:0 1px 1px 0; }
+    .hero-label { position:absolute; bottom:25px; left:25px; padding:7px 9px; background:rgba(18,28,28,.55); color:#f9f7f0; font-size:9px; letter-spacing:.13em; }
+    .hero-open .open-cue { position:absolute; right:24px; top:24px; width:42px; height:42px; background:var(--paper); border-radius:50%; display:grid; place-items:center; }
+    .hero-caption { display:flex; justify-content:space-between; align-items:center; gap:24px; padding-block:18px; border-bottom:1px solid var(--rule); }
+    .hero-caption p { display:flex; align-items:center; gap:20px; margin:0; font-size:12px; }
+    .hero-caption .mono { color:var(--muted); }
+    .hero-caption .caption-note { font-size:10px; color:var(--muted); }
+    .collection { padding-block:76px 54px; scroll-margin-top:24px; }
+    .collection-heading { display:flex; align-items:baseline; justify-content:space-between; gap:20px; }
+    h2 { margin:0; font-size:28px; font-weight:400; letter-spacing:-.7px; }
+    h2 span { font-family:var(--serif); font-size:38px; padding-right:18px; letter-spacing:-1.2px; }
+    .collection-heading p { margin:0; font-size:11px; color:var(--muted); }
+    .toolbar { display:flex; align-items:center; justify-content:space-between; gap:24px; border-bottom:1px solid var(--rule); padding-block:27px 23px; margin-bottom:35px; }
+    .filters { display:flex; align-items:center; gap:29px; }
+    .filters button { padding:0; min-height:44px; display:flex; align-items:baseline; gap:7px; position:relative; font-size:13px; color:var(--muted); white-space:nowrap; }
+    .filters button[aria-pressed="true"] { color:var(--ink); }
+    .filters button[aria-pressed="true"]::after { content:""; width:100%; height:1px; background:var(--ink); position:absolute; bottom:-24px; }
+    .filters .count { font-family:var(--mono); font-size:9px; color:var(--muted); }
+    .display-options { display:flex; gap:3px; }
+    .display-options button { width:44px; height:44px; display:grid; place-items:center; color:var(--muted); }
+    .display-options button[aria-pressed="true"] { color:var(--ink); background:#ebe9e2; }
+    .gallery { columns:3; column-gap:var(--gallery-gap); }
+    .frame { margin:0 0 36px; break-inside:avoid; display:block; }
+    .frame[hidden] { display:none; }
+    .frame-button { display:block; width:100%; padding:0; text-align:left; }
+    .image-wrap { overflow:hidden; position:relative; background:#e6e4dd; }
+    .frame img { display:block; width:100%; height:auto; transition:transform .7s ease; }
+    .frame-button:hover img { transform:scale(1.018); }
+    .hover-label { opacity:0; position:absolute; right:14px; bottom:14px; width:35px; height:35px; display:grid; place-items:center; border-radius:50%; background:var(--paper); transition:opacity .2s; }
+    .frame-button:hover .hover-label,.frame-button:focus-visible .hover-label { opacity:1; }
+    .frame figcaption { display:flex; justify-content:space-between; align-items:center; gap:12px; padding-top:14px; }
+    .frame figcaption .title { font-size:12px; }
+    .frame figcaption .category { color:var(--muted); font-size:9px; letter-spacing:.1em; }
+    .gallery[data-density="contact"] { columns:4; --gallery-gap:22px; }
+    .gallery[data-density="contact"] .frame { margin-bottom:24px; }
+    .gallery[data-density="contact"] .title { font-size:11px; }
+    .gallery[data-density="contact"] .category { display:none; }
+    .collection-end { display:flex; flex-direction:column; gap:12px; align-items:center; padding-top:50px; color:var(--muted); }
+    .collection-end .end-line { width:1px; height:38px; background:var(--rule); }
+    .collection-end p { margin:0; font-size:12px; letter-spacing:.12em; }
+    .footer { display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--rule); padding-block:28px 43px; gap:24px; }
+    .footer p { margin:0; font-size:11px; color:var(--muted); }
+    .footer .footer-name { color:var(--ink); font-family:var(--serif); font-size:20px; }
+    .credit-button { font-size:11px; text-decoration:underline; text-underline-offset:5px; min-height:44px; padding:0; }
+    .prototype-note { text-align:center; padding:13px 22px; border-top:1px solid var(--rule); font-size:10px; color:var(--muted); line-height:1.8; }
+    .review-launch { position:fixed; bottom:20px; right:24px; z-index:5; display:flex; align-items:center; gap:10px; padding:12px 16px; min-height:44px; border:1px solid var(--rule); background:var(--surface); box-shadow:0 3px 15px #27241f09; font-size:11px; }
+    .review-launch svg { width:16px; height:16px; }
+    dialog { border:0; padding:0; color:var(--ink); background:var(--paper); }
+    dialog::backdrop { background:rgba(39,36,31,.3); }
+    .viewer { width:100vw; max-width:100vw; height:100dvh; max-height:100dvh; margin:0; --viewer-bg:var(--paper); --viewer-ink:var(--ink); --viewer-muted:var(--muted); background:var(--viewer-bg); color:var(--viewer-ink); }
+    .viewer[data-dark="true"] { --viewer-bg:#171917; --viewer-ink:#f0ede4; --viewer-muted:#aaa99f; }
+    .viewer-layout { display:grid; grid-template-rows:76px minmax(0,1fr) auto; height:100%; }
+    .viewer-head { display:flex; justify-content:space-between; align-items:center; gap:20px; padding-inline:32px; }
+    .viewer-head .viewer-brand { font-family:var(--serif); font-size:23px; letter-spacing:-.5px; }
+    .viewer-tools { display:flex; gap:8px; align-items:center; }
+    .viewer-tools button { display:flex; align-items:center; justify-content:center; gap:8px; min-width:44px; min-height:44px; font-size:11px; }
+    .viewer-tools .divider { width:1px; height:19px; background:var(--viewer-muted); opacity:.3; margin-inline:6px; }
+    .viewer-stage { display:grid; grid-template-columns:64px minmax(0,1fr) 64px; gap:20px; padding:10px 30px 20px; min-height:0; }
+    .viewer-stage > button { align-self:center; width:48px; height:48px; border:1px solid color-mix(in srgb,var(--viewer-ink) 18%,transparent); border-radius:50%; display:grid; place-items:center; }
+    .viewer-stage > button:last-child { justify-self:end; }
+    .viewer-image { width:100%; height:100%; min-height:0; object-fit:contain; }
+    .viewer-bottom { padding:18px 114px 30px; display:flex; flex-direction:column; gap:14px; }
+    .viewer-caption { display:flex; justify-content:space-between; align-items:center; gap:24px; }
+    .viewer-title-group { display:flex; gap:20px; align-items:baseline; }
+    .viewer-title-group h3 { margin:0; font-size:16px; font-weight:400; }
+    .viewer-title-group p { margin:0; font-size:10px; color:var(--viewer-muted); }
+    .viewer-count { color:var(--viewer-muted); }
+    .viewer-info { font-size:11px; color:var(--viewer-muted); line-height:1.8; padding-top:14px; border-top:1px solid color-mix(in srgb,var(--viewer-ink) 18%,transparent); }
+    .viewer-info a { text-decoration:underline; text-underline-offset:3px; }
+    .viewer-hint { font-size:10px; color:var(--viewer-muted); margin:0; }
+    .review { width:min(880px,calc(100vw - 32px)); max-height:calc(100dvh - 32px); border:1px solid var(--rule); }
+    .review-head { display:flex; justify-content:space-between; align-items:center; padding:30px 36px 23px; gap:20px; }
+    .review-head h2 { font-family:var(--serif); font-size:32px; }
+    .close-review { min-width:44px; min-height:44px; display:grid; place-items:center; }
+    .review-tabs { display:flex; gap:24px; border-bottom:1px solid var(--rule); padding-inline:36px; overflow-x:auto; }
+    .review-tabs button { min-height:49px; font-size:12px; white-space:nowrap; color:var(--muted); border-bottom:2px solid transparent; padding-inline:0; }
+    .review-tabs button[aria-selected="true"] { border-color:var(--ink); color:var(--ink); }
+    .review-panel { padding:29px 36px 36px; font-size:13px; line-height:1.8; }
+    .review-panel h3 { margin:0 0 14px; font-size:22px; font-weight:400; line-height:1.5; }
+    .review-panel h4 { font-weight:500; font-size:14px; margin:24px 0 8px; }
+    .review-panel p { margin:0 0 14px; }
+    .review-panel ul,.review-panel ol { padding-left:21px; margin:12px 0; }
+    .review-panel li { padding-bottom:7px; }
+    .review-panel a { text-decoration:underline; text-underline-offset:3px; }
+    .review-panel .small { color:var(--muted); font-size:11px; }
+    .review-panel .decision { border:1px solid var(--rule); padding:19px 22px; background:var(--surface); }
+    .architecture { display:grid; grid-template-columns:1fr 32px 1fr; align-items:center; gap:12px; margin:24px 0; }
+    .architecture > div { border:1px solid var(--rule); padding:16px; background:var(--surface); line-height:1.7; }
+    .architecture > span { text-align:center; color:var(--muted); }
+    .architecture b { display:block; font-weight:500; }
+    .architecture small { display:block; color:var(--muted); font-size:11px; }
+    .storage-table { width:100%; border-collapse:collapse; margin:18px 0; font-size:12px; }
+    .storage-table th,.storage-table td { text-align:left; vertical-align:top; border-bottom:1px solid var(--rule); padding:12px 10px 12px 0; }
+    .storage-table th { font-weight:500; color:var(--muted); }
+    .storage-table td:first-child { width:20%; font-weight:500; }
+    code { font-family:var(--mono); font-size:11px; background:#eeece5; padding:2px 5px; border-radius:2px; overflow-wrap:anywhere; }
+    pre { white-space:pre-wrap; word-break:break-word; margin:18px 0; padding:20px; font-family:var(--mono); font-size:11px; line-height:1.7; background:#eeece5; overflow:auto; }
+    .credit-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px 26px; margin-block:22px; }
+    .credit-grid div { border-bottom:1px solid var(--rule); padding-bottom:12px; }
+    .credit-grid strong { font-weight:500; font-size:12px; display:block; }
+    .credit-grid a { font-size:11px; color:var(--muted); }
+    .toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); padding:13px 20px; background:var(--surface); border:1px solid var(--rule); color:var(--ink); font-size:12px; z-index:40; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
+    [hidden] { display:none !important; }
+    @media (min-width:1500px) { .intro-copy p { font-size:16px; } }
+    @media (max-width:1050px) { .intro { grid-template-columns:1fr; gap:25px; } .intro-copy { flex-direction:row; align-items:baseline; justify-content:space-between; } .gallery { columns:2; } .gallery[data-density="contact"] { columns:3; } .nav { gap:24px; } }
+    @media (max-width:600px) {
+      :root { --gallery-gap:18px; }
+      .masthead { min-height:78px; gap:14px; }
+      .signature { gap:8px; } .signature span { font-size:22px; } .signature svg { width:21px; }
+      .nav .mono { display:none; } .nav a { font-size:11px; gap:9px; } .nav a svg { width:15px; }
+      .intro { padding-block:36px 30px; gap:21px; }
+      .eyebrow { font-size:8px; margin-bottom:18px; }
+      h1 { font-size:clamp(48px,12.6vw,74px); letter-spacing:-.06em; }
+      .intro-copy { flex-direction:column; gap:10px; } .intro-copy p { font-size:12px; } .intro-copy .english { font-size:10px; }
+      .hero-open > img { aspect-ratio:1.55; object-position:50% 60%; }
+      .hero-open .open-cue { width:35px; height:35px; top:14px; right:14px; }
+      .hero-mark.tl { left:14px; top:14px; } .hero-mark.br { right:14px; bottom:14px; }
+      .hero-label { left:14px; bottom:14px; font-size:7px; }
+      .hero-caption { padding-block:15px; gap:15px; } .hero-caption p { gap:11px; font-size:11px; } .hero-caption .caption-note { font-size:9px; }
+      .collection { padding-block:46px 36px; }
+      h2 { font-size:21px; } h2 span { font-size:30px; padding-right:10px; }
+      .collection-heading p { font-size:9px; }
+      .toolbar { align-items:flex-start; flex-direction:column; gap:12px; padding-block:17px 15px; margin-bottom:23px; }
+      .filters { gap:23px; justify-content:space-between; width:100%; }
+      .filters button { font-size:12px; gap:4px; }
+      .filters button[aria-pressed="true"]::after { bottom:6px; }
+      .display-options { align-self:flex-end; }
+      .display-options button { width:36px; height:44px; }
+      .gallery { columns:2; } .gallery[data-density="contact"] { columns:3; --gallery-gap:12px; }
+      .frame { margin-bottom:24px; } .frame figcaption { gap:5px; padding-top:10px; }
+      .frame figcaption .title { font-size:11px; } .frame figcaption .category { display:none; }
+      .gallery[data-density="contact"] .frame { margin-bottom:18px; } .gallery[data-density="contact"] .title { font-size:9px; }
+      .hover-label { display:none; }
+      .collection-end { padding-top:23px; } .collection-end p { font-size:10px; }
+      .footer { flex-wrap:wrap; gap:10px 20px; padding-block:23px 30px; } .footer .footer-name { width:100%; font-size:21px; }
+      .footer p { font-size:10px; } .credit-button { font-size:10px; }
+      .prototype-note { padding-bottom:76px; font-size:9px; }
+      .review-launch { right:16px; bottom:16px; padding:11px 14px; }
+      .viewer-layout { grid-template-rows:68px minmax(0,1fr) auto; }
+      .viewer-head { padding-inline:18px; } .viewer-head .viewer-brand { font-size:21px; }
+      .viewer-tools { gap:2px; } .viewer-tools .tool-label { display:none; } .viewer-tools .divider { display:none; }
+      .viewer-tools button { min-width:38px; }
+      .viewer-stage { grid-template-columns:36px minmax(0,1fr) 36px; padding:0 10px 16px; gap:3px; }
+      .viewer-stage > button { width:34px; height:44px; border:0; border-radius:0; }
+      .viewer-stage > button svg { width:18px; }
+      .viewer-bottom { padding:15px 20px 25px; } .viewer-title-group { flex-direction:column; gap:8px; }
+      .viewer-title-group h3 { font-size:14px; } .viewer-hint { font-size:9px; }
+      .review-head { padding:22px 22px 16px; } .review-head h2 { font-size:27px; }
+      .review-tabs { padding-inline:22px; gap:23px; }
+      .review-panel { padding:23px 22px 28px; font-size:12px; } .review-panel h3 { font-size:19px; }
+      .architecture { grid-template-columns:1fr; } .architecture > span { transform:rotate(90deg); }
+      .storage-table { font-size:11px; } .storage-table td:first-child { width:25%; }
+      .credit-grid { grid-template-columns:1fr; }
+    }
+    @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } *,*::before,*::after { transition:none !important; animation:none !important; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#collection">跳到摄影作品</a>
+  <div class="shell">
+    <header class="masthead">
+      <a class="signature" href="#" aria-label="Woody’s Frames 首页"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M3 10V3h7M18 3h7v7M25 18v7h-7M10 25H3v-7"></path></svg><span>Woody’s Frames</span></a>
+      <nav class="nav" aria-label="主导航"><span class="mono" lang="en">A PERSONAL PHOTO JOURNAL</span><a href="#collection">浏览作品 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16m-6-6 6 6 6-6"></path></svg></a></nav>
+    </header>
+    <main>
+      <section class="intro" aria-labelledby="site-title">
+        <div><p class="eyebrow mono" lang="en">THROUGH MY VIEWFINDER</p><h1 id="site-title" lang="en">Woody’s <em>Frames.</em></h1></div>
+        <div class="intro-copy"><p>收藏目光停留过的地方。</p><p class="english" lang="en">People. Places. The in-between.</p></div>
+      </section>
+      <figure class="hero">
+        <button class="hero-open" data-open-id="8332692" aria-label="打开精选示例：一片寂静">
+          <img src="assets/web/landscape-lake.jpg" width="1440" height="1079" alt="群山与树林环绕湖泊的航拍风景" fetchpriority="high" decoding="async">
+          <span class="hero-mark tl" aria-hidden="true"></span><span class="hero-mark br" aria-hidden="true"></span><span class="hero-label mono" lang="en">A MOMENT, HELD STILL.</span><span class="open-cue" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"></path></svg></span>
+        </button>
+        <figcaption class="hero-caption"><p><span class="mono" lang="en">FEATURED FRAME</span><span>一片寂静</span></p><span class="caption-note">风景 · 示例摄影</span></figcaption>
+      </figure>
+      <section class="collection" id="collection" aria-labelledby="collection-title">
+        <div class="collection-heading"><h2 id="collection-title"><span lang="en">The collection</span>目光所及</h2><p id="result-count" aria-live="polite">12 帧 · 授权示例</p></div>
+        <div class="toolbar">
+          <div class="filters" role="group" aria-label="按摄影类别筛选">
+            <button data-filter="all" aria-pressed="true">全部<span class="count">12</span></button>
+            <button data-filter="portrait" aria-pressed="false">人像<span class="count">03</span></button>
+            <button data-filter="landscape" aria-pressed="false">风景<span class="count">03</span></button>
+            <button data-filter="street" aria-pressed="false">街头<span class="count">03</span></button>
+            <button data-filter="humanity" aria-pressed="false">人文<span class="count">03</span></button>
+          </div>
+          <div class="display-options" role="group" aria-label="画廊密度"><button data-density="gallery" aria-pressed="true" aria-label="宽松画廊视图" title="画廊"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h7v11H3zM14 3h7v7h-7zM3 18h7v3H3zM14 14h7v7h-7z"></path></svg></button><button data-density="contact" aria-pressed="false" aria-label="紧凑联系表视图" title="联系表"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h4v7H3zM10 3h4v7h-4zM17 3h4v7h-4zM3 14h4v7H3zM10 14h4v7h-4zM17 14h4v7h-4z"></path></svg></button></div>
+        </div>
+        <div class="gallery" data-density="gallery" id="gallery">
+          <figure class="frame" data-id="27532814" data-category="portrait" data-author="Oz Art" data-source="https://www.pexels.com/photo/a-woman-with-red-lipstick-and-black-dress-27532814"><button class="frame-button" aria-label="打开人像示例：光落在脸上"><div class="image-wrap"><img src="assets/web/portrait-light.jpg" width="1440" height="2195" loading="lazy" decoding="async" alt="自然光中的女性人像，红色唇妆与黑色衣着"><span class="hover-label" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"></path></svg></span></div></button><figcaption><span class="title">光落在脸上</span><span class="category" lang="en">PORTRAIT</span></figcaption></figure>
+          <figure class="frame" data-id="33640729" data-category="landscape" data-author="Jazmín Burela" data-source="https://www.pexels.com/photo/sunlight-penetrating-misty-mountain-landscape-33640729/"><button class="frame-button" aria-label="打开风景示例：雾散之前"><div class="image-wrap"><img src="assets/web/landscape-sunlight.jpg" width="1440" height="960" loading="lazy" decoding="async" alt="阳光穿透湖畔山间的薄雾"><span class="hover-label" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"></path></svg></span></div></button><figcaption><span class="title">雾散之前</span><span class="category" lang="en">LANDSCAPE</span></figcaption></figure>
+          <figure class="frame" data-id="38242998" data-category="humanity" data-author="Andri Wijayanto" data-source="https://www.pexels.com/photo/fish-market-activity-in-jakarta-harbor-38242998"><button class="frame-button" aria-label="打开人文示例：岸上的日常"><div class="image-wrap"><img src="assets/web/humanity-harbor.jpg" width="1440" height="960" loading="lazy" decoding="async" alt="码头上渔民用扁担搬运装着鱼的容器"><span class="hover-label" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"></path></svg></span></div></button><figcaption><span class="title">岸上的日常</span><span class="category" lang="en">DOCUMENTARY</span></figcaption></figure>
+          <figure class="frame" data-id="33829245" data-category="portrait" data-author="Tiemy Pixel" data-source="https://www.pexels.com/photo/portrait-of-a-woman-with-greenery-in-natural-light-33829245"><button class="frame-button" aria-label="打开人像示例：树影之间"><div class="image-wrap"><img src="assets/web/portrait-greenery.jpg" width="1440" height="1440" loading="lazy" decoding="async" alt="手持绿色枝条的女性自然光人像"><span class="hover-label" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"></path></svg></span></div></button><figcaption><span class="title">树影之间</span><span class="category" lang="en">PORTRAIT</span></figcaption></figure>
+          <figure class="frame" data-id="3048538" data-category="street" data-author="Aleksandar Pasaric" data-source="https://www.pexels.com/photo/people-standing-beside-road-3048538"><button class="frame-button" aria-label="打开街头示例：入夜以后"><div class="image-wrap"><img src="assets/web/street-neon.jpg" width="1440" height="749" loading="lazy" decoding="async" alt="雨夜城市街道与霓虹灯在路面上的倒影"><span class="hover-label" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"></path></svg></span></div></button><figcaption><span class="title">入夜以后</span><span class="category" lang="en">STREET</span></figcaption></figure>
+          <figure class="frame" data-id="22942809" data-category="landscape" data-author="Malcolm Gillanders" data-source="https://www.pexels.com/photo/mountains-in-fog-near-lake-in-canada-22942809"><button class="frame-button" aria-label="打开风景示例：山的另一边"><div class="image-wrap"><img src="assets/web/landscape-mist.jpg" width="1440" height="2559" loading="lazy" decoding="async" alt="云雾中的群山与平静湖面"><span class="hover-label" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"></path></svg></span></div></button><figcaption><span class="title">山的另一边</span><span class="category" lang="en">LANDSCAPE</span></figcaption></figure>
+          <figure class="frame" data-id="4642008" data-category="humanity" data-author="Nataliya Vaitkevich" data-source="https://www.pexels.com/photo/couple-walking-by-the-shore-covered-with-fog-4642008/"><button class="frame-button" aria-label="打开人文示例：一起走过"><div class="image-wrap"><img src="assets/web/humanity-walk.jpg" width="1440" height="2160" loading="lazy" decoding="async" alt="两个人沿着雾气中的湖岸步行"><span class="hover-label" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"></path></svg></span></div></button><figcaption><span class="title">一起走过</span><span class="category" lang="en">DOCUMENTARY</span></figcaption></figure>
+          <figure class="frame" data-id="9807321" data-category="street" data-author="Plato Terentev" data-source="https://www.pexels.com/photo/raining-during-night-9807321/"><button class="frame-button" aria-label="打开街头示例：城市的余光"><div class="image-wrap"><img src="assets/web/street-night.jpg" width="1440" height="960" loading="lazy" decoding="async" alt="夜雨中灯光照亮的湿润城市街道"><span class="hover-label" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"></path></svg></span></div></button><figcaption><span class="title">城市的余光</span><span class="category" lang="en">STREET</span></figcaption></figure>
+          <figure class="frame" data-id="8332692" data-category="landscape" data-author="Mikhail Nilov" data-source="https://www.pexels.com/photo/drone-shot-of-a-mountain-and-a-lake-8332692"><button class="frame-button" aria-label="打开风景示例：一片寂静"><div class="image-wrap"><img src="assets/web/landscape-lake.jpg" width="1440" height="1079" loading="lazy" decoding="async" alt="群山与树林环绕湖泊的航拍风景"><span class="hover-label" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"></path></svg></span></div></button><figcaption><span class="title">一片寂静</span><span class="category" lang="en">LANDSCAPE</span></figcaption></figure>
+          <figure class="frame" data-id="15693574" data-category="portrait" data-author="Evellyn Cardoso" data-source="https://www.pexels.com/photo/model-posing-with-flowers-15693574"><button class="frame-button" aria-label="打开人像示例：花与她"><div class="image-wrap"><img src="assets/web/portrait-flowers.jpg" width="1440" height="2106" loading="lazy" decoding="async" alt="卷发女性手持白色郁金香的人像"><span class="hover-label" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"></path></svg></span></div></button><figcaption><span class="title">花与她</span><span class="category" lang="en">PORTRAIT</span></figcaption></figure>
+          <figure class="frame" data-id="36809138" data-category="humanity" data-author="Thien Le Duy" data-source="https://www.pexels.com/photo/vietnamese-fisherman-selling-herrings-at-market-36809138"><button class="frame-button" aria-label="打开人文示例：生活的重量"><div class="image-wrap"><img src="assets/web/humanity-fisherman.jpg" width="1440" height="2282" loading="lazy" decoding="async" alt="海边市场中售卖鱼的渔民"><span class="hover-label" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"></path></svg></span></div></button><figcaption><span class="title">生活的重量</span><span class="category" lang="en">DOCUMENTARY</span></figcaption></figure>
+          <figure class="frame" data-id="12392818" data-category="street" data-author="Pew Nguyen" data-source="https://www.pexels.com/photo/people-on-the-street-on-a-rainy-day-12392818/"><button class="frame-button" aria-label="打开街头示例：雨未停"><div class="image-wrap"><img src="assets/web/street-rain.jpg" width="1440" height="2160" loading="lazy" decoding="async" alt="雨夜中机动车行驶在湿润的街道上"><span class="hover-label" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"></path></svg></span></div></button><figcaption><span class="title">雨未停</span><span class="category" lang="en">STREET</span></figcaption></figure>
+        </div>
+        <div class="collection-end"><span class="end-line" aria-hidden="true"></span><p>世界很大，取景框很小。</p><span class="mono" lang="en">UNTIL THE NEXT FRAME.</span></div>
+      </section>
+    </main>
+    <footer class="footer"><p class="footer-name">Woody’s Frames</p><p>人像 / 风景 / 街头 / 人文</p><button class="credit-button" id="open-credits">示例摄影与素材署名 ↗</button></footer>
+  </div>
+  <div class="prototype-note">设计原型 · 当前 12 张照片均为 Pexels 授权示例，非 Woody 本人作品。标题为原型编辑文案。正式发布前替换为你的摄影作品。</div>
+  <button class="review-launch" id="open-review"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4zM8 8h8M8 12h8M8 16h4"></path></svg>原型说明 / 实现方案</button>
+  <dialog class="viewer" id="viewer" aria-label="摄影作品大图浏览" data-dark="false">
+    <div class="viewer-layout">
+      <header class="viewer-head"><span class="viewer-brand">Woody’s Frames</span><div class="viewer-tools"><button id="toggle-info" aria-label="显示照片信息" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 7h.01"></path></svg><span class="tool-label">信息</span></button><button id="toggle-dark" aria-label="切换暗场观看" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14a9 9 0 0 1-10-10 9 9 0 1 0 10 10Z"></path></svg><span class="tool-label">暗场</span></button><button id="copy-link" aria-label="复制当前照片链接"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 14 4-4M8 16l-1 1a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0m2 2 1-1a4 4 0 0 1 6 6l-4 4a4 4 0 0 1-6 0" transform="translate(1 0)"></path></svg></button><span class="divider" aria-hidden="true"></span><button id="close-viewer" aria-label="关闭大图"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg></button></div></header>
+      <div class="viewer-stage" id="viewer-stage"><button id="previous-frame" aria-label="上一张照片"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5-7 7 7 7"></path></svg></button><img class="viewer-image" id="viewer-image" alt=""><button id="next-frame" aria-label="下一张照片"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 5 7 7-7 7"></path></svg></button></div>
+      <div class="viewer-bottom"><div class="viewer-caption" aria-live="polite"><div class="viewer-title-group"><h3 id="viewer-title"></h3><p id="viewer-category"></p></div><span class="viewer-count mono" id="viewer-count"></span></div><div class="viewer-info" id="viewer-info" hidden><span id="viewer-author"></span> · <a id="viewer-source" target="_blank" rel="noopener noreferrer">摄影来源 ↗</a> · <a href="https://www.pexels.com/license/" target="_blank" rel="noopener noreferrer">Pexels License ↗</a><br>授权示例，非 Woody 本人作品。大图保留原始画幅，不增加滤镜；未提供拍摄地点、年份或 EXIF。</div><p class="viewer-hint">← → 切换照片 · Esc 返回 · 手机支持左右滑动</p></div>
+    </div>
+  </dialog>
+  <dialog class="review" id="review" aria-labelledby="review-title">
+    <header class="review-head"><h2 id="review-title">Behind the frames.</h2><button class="close-review" id="close-review" aria-label="关闭原型说明"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg></button></header>
+    <div class="review-tabs" role="tablist" aria-label="原型与方案说明"><button id="tab-design" data-panel="design" role="tab" aria-controls="panel-design" aria-selected="true">设计意图</button><button id="tab-architecture" data-panel="architecture" role="tab" aria-controls="panel-architecture" aria-selected="false" tabindex="-1">无状态架构</button><button id="tab-storage" data-panel="storage" role="tab" aria-controls="panel-storage" aria-selected="false" tabindex="-1">照片存储</button><button id="tab-workflow" data-panel="workflow" role="tab" aria-controls="panel-workflow" aria-selected="false" tabindex="-1">更新流程</button><button id="tab-credits" data-panel="credits" role="tab" aria-controls="panel-credits" aria-selected="false" tabindex="-1">素材署名</button></div>
+    <section class="review-panel" id="panel-design" role="tabpanel" aria-labelledby="tab-design">
+      <h3>一个取景框，而不是一个功能很多的网站。</h3>
+      <p>浅色摄影集 / 画廊与分类 / 公开精选作品。这是这一版已经确认的范围：只让照片、留白和文字构成页面，不加入博客、商店、评论、账户或后台。</p>
+      <ul><li><strong>视觉：</strong>暖白纸感底色、衬线标题、细线分隔；用取景框的四角作为唯一的品牌图形。没有装饰性渐变、滤镜或自动轮播。</li><li><strong>电影感：</strong>一张宽幅精选照片作为开场，横竖作品交错排列；打开大图后画面完整保留，可选择暗场观看。</li><li><strong>浏览：</strong>四类筛选、画廊 / 紧凑联系表、照片链接、键盘和手机滑动。首屏精选仅做封面裁切，画廊与大图均不裁切。</li><li><strong>收藏与整理：</strong>作品由你在本地目录和照片索引中管理。这里没有假装能保存到云端的上传按钮，也不以浏览器 localStorage 代替真实归档。</li></ul>
+      <p class="decision">这是一份可交互视觉原型，不是已接入云存储的生产网站。照片已内嵌到离线交付版；正式版不会把整个图库内嵌进 HTML。右下角说明按钮和所有示例标记，均不属于正式网站。</p>
+    </section>
+    <section class="review-panel" id="panel-architecture" role="tabpanel" aria-labelledby="tab-architecture" hidden>
+      <h3>网站无状态，照片有一个持久的家。</h3>
+      <p>推荐 <strong>Astro + TypeScript + 原生 CSS + 少量浏览器脚本</strong>，构建成静态 HTML，未来部署到 Vercel。仅展示摄影不需要数据库、登录、API 服务或常驻服务器；无需使用 Vercel Functions。</p>
+      <div class="architecture"><div><b>源码与照片索引</b><small>页面 / 组件 / photos.json<br>分类、标题、相对 objectKey</small></div><span aria-hidden="true">→</span><div><b>构建 → Vercel CDN</b><small>静态页面 / 分类与照片页<br>浏览器执行筛选、大图交互</small></div><div><b>本地摄影管理</b><small>选片 / 导出展示尺寸<br>上传脚本在本地运行</small></div><span aria-hidden="true">→</span><div><b>对象存储 → 图片 CDN</b><small>只公开展示图<br>浏览器直读，网站不持有写密钥</small></div></div>
+      <p><strong>“无状态”不是“不能保存照片”。</strong>它指网站运行时不依赖会话、可写本地磁盘或数据库。照片存入对象存储，索引持久保存在 Git，两者都独立于页面服务。</p>
+      <h4>为什么不是一开始就上 Next.js？</h4><p>Next.js 同样可以使用 <code>output: "export"</code> 实现纯静态。如果你希望统一到 React / Next.js 技术栈，可以选它；但这个项目用 Astro 更精简。Next.js 静态导出不能使用默认的运行时图片优化，要用预生成尺寸或自定义图片 loader。</p>
+      <h4>正式版页面与交付顺序</h4><p>先实现首页与四类画廊、可分享的静态照片详情页、大图观看；再实现本地选片与图片导出脚本、元数据校验；最后连接 Git 与 Vercel、设置域名 / 图片缓存、测试真实网络与手机浏览。此轮只完成设计原型，不执行 Git 操作或部署。</p>
+      <p class="small">依据：<a href="https://docs.astro.build/en/guides/integrations-guide/vercel/" target="_blank" rel="noopener noreferrer">Astro 静态部署</a> · <a href="https://nextjs.org/docs/app/guides/static-exports" target="_blank" rel="noopener noreferrer">Next.js 静态导出</a>。核验日期：2026-10-20。</p>
+    </section>
+    <section class="review-panel" id="panel-storage" role="tabpanel" aria-labelledby="tab-storage" hidden>
+      <h3>展示图进对象存储，照片信息进源码。</h3>
+      <p class="decision"><strong>正式版推荐：Vercel + Cloudflare R2 自定义图片域名。</strong><br>前提是你愿意用 Cloudflare 管理域名，并以全球访问和流量成本可控为重点。如果已有腾讯云资源或更重视中国内地访问，优先评估 COS + 合适区域的 CDN；上线前必须实测 Vercel 页面与图片两条链路。</p>
+      <table class="storage-table"><thead><tr><th>选择</th><th>适合什么</th><th>注意与建议</th></tr></thead><tbody><tr><td>源码 public/</td><td>Logo、图标、少量固定封面；小型初版</td><td>可以直接被静态部署分发，但大量图片会拖大 Git 历史、克隆和构建。原片不要提交。数十张压缩图可以起步，长期图库不推荐。</td></tr><tr><td>Cloudflare R2</td><td>长期公开图库；重视出站流量成本</td><td>对象存储出站流量免收费，但存储、操作及额外图片处理不等于免费。生产用自定义域名与缓存规则，不能依赖限流的 r2.dev。R2 不等于自动图片压缩服务。</td></tr><tr><td>腾讯云 COS</td><td>已有腾讯云账号；区域与 CDN 策略更贴近主要访客</td><td>可配 CDN / 数据万象，也可本地预生成展示图。分别核算存储、请求、出站 / CDN 和图片处理费用；中国内地 CDN 自定义域名需满足备案要求。</td></tr><tr><td>Vercel Blob</td><td>最少平台切换；管理集中在 Vercel</td><td>公开图可用 URL 直接展示，且有 CDN。留意存储、操作、上传及分发费用。私有 Blob 读取需要鉴权与 Function，不属于本方案的纯静态直读路径。</td></tr></tbody></table>
+      <h4>两类照片，两个隔离的空间</h4><ul><li><strong>公开展示桶：</strong>只有压缩后的展示图；禁止匿名写入；如用 COS，可设私有源站 + CDN 回源授权，对外只公开展示图 CDN。这里的照片本来就是公开的，不承诺防下载。</li><li><strong>原片与未公开作品：</strong>独立私有桶 + 本地硬盘 / NAS 备份，不进入公开照片索引。对象存储不是唯一备份，保留至少两份独立副本。</li><li><strong>访问控制：</strong>公开展示意味着任何获得图片 URL 的人都能读取。隐藏链接、前端密码、Referer 防盗链都不构成真正的原片隐私保护。仅把照片放在私有源站，也不自动使 CDN 访问私有。</li></ul>
+      <h4>体量示例，而不是报价</h4><p>假设 1,000 张，每张原片 25 MB，则约 25 GB；每张三个展示尺寸合计 1 MB，则展示图库约 1 GB。每月 10,000 次访问、每次实际加载 20 张 × 0.25 MB，约 50 GB 客户端图片流量。实际账单还取决于缓存命中、分发路径与处理服务。</p>
+      <p class="small">官方依据：<a href="https://developers.cloudflare.com/r2/pricing/" target="_blank" rel="noopener noreferrer">R2 费用</a> · <a href="https://developers.cloudflare.com/r2/buckets/public-buckets/" target="_blank" rel="noopener noreferrer">R2 公开桶与域名</a> · <a href="https://cloud.tencent.com/document/product/436/13396" target="_blank" rel="noopener noreferrer">COS 域名 / CDN</a> · <a href="https://intl.cloud.tencent.com/zh/document/product/436/18669" target="_blank" rel="noopener noreferrer">COS 回源鉴权</a> · <a href="https://vercel.com/docs/vercel-blob" target="_blank" rel="noopener noreferrer">Vercel Blob</a>。价格与额度以开通时官方页面为准。</p>
+    </section>
+    <section class="review-panel" id="panel-workflow" role="tabpanel" aria-labelledby="tab-workflow" hidden>
+      <h3>像整理摄影集一样更新网站。</h3>
+      <ol><li><strong>本地选片：</strong>在 Lightroom / Capture One 或原有目录中维护原片，只选择准备公开的作品。</li><li><strong>导出展示图：</strong>统一到 sRGB，生成长边 640 / 1280 / 2560 px 的 WebP（或 JPEG 回退），不放大低分辨率原图，不强行裁切；去掉 GPS 和不必要的 EXIF。</li><li><strong>上传到对象存储：</strong>本地脚本仅上传这一批新增展示图。写密钥保存在本地环境变量 / 密钥管理中，采用最小权限，不进入源码、浏览器或公开环境变量。</li><li><strong>生成照片索引：</strong>保存唯一 ID、标题、分类、标签、拍摄日期（可空）、地点（可空）、原始宽高、排序、公开状态，以及每个尺寸的 objectKey。所有事实由你提供或从真实文件读取，不猜拍摄信息。</li><li><strong>校验与发布：</strong>先确保图片存在、尺寸正确、索引合法；经你批准提交源码后，由 Vercel 构建发布。仅上传图片不会自动出现在画廊，新增条目需要索引更新与一次重新部署。</li></ol>
+      <pre>代码仓库
+  src/pages/          首页 / 分类 / 静态照片详情页
+  src/components/     Gallery / Lightbox / Photo
+  src/data/photos.json
+  scripts/            图片导出、上传、索引校验
+  public/             品牌图形与少量固定资源
+
+公开图片空间（示意，尚未创建）
+  frames/{photo-id}/{content-hash}/640.webp
+  frames/{photo-id}/{content-hash}/1280.webp
+  frames/{photo-id}/{content-hash}/2560.webp
+
+私有原片空间：与公开展示桶完全分离</pre>
+      <p><strong>保持可迁移：</strong>索引存相对 objectKey，通过图片域名配置拼成 URL。不要把厂商签名链接写死在照片数据里；用内容哈希生成新文件路径，配置长期缓存，避免替换图片后一直看到旧版本。</p>
+      <h4>性能与边界</h4><p>首屏仅预加载精选图，其他缩略图按需懒加载；使用 <code>srcset</code> / <code>sizes</code>，大图只在打开时加载；为图片声明宽高避免布局跳动。图库增长后静态分页，不一次加载所有作品。分享使用真实照片详情页与 Open Graph，不依赖只有浏览器能理解的 hash。</p>
+      <p class="decision">第一期不做网页内上传与排序保存。若以后需要“打开网站就能上传 / 管理”，应另建受鉴权的管理端或接入静态 CMS；展示站仍可静态，但管理能力需要额外授权与持久写入通道。</p>
+    </section>
+    <section class="review-panel" id="panel-credits" role="tabpanel" aria-labelledby="tab-credits" hidden>
+      <h3>示例照片，保留摄影者的署名。</h3><p>本原型使用 <a href="https://www.pexels.com/license/" target="_blank" rel="noopener noreferrer">Pexels License</a> 授权素材，只用于展示版式与交互；不表示摄影者或画面人物为网站背书，也不将这些作品归为 Woody 本人作品。以下是各作品的来源。</p>
+      <div class="credit-grid"><div><strong>光落在脸上 · Oz Art</strong><a href="https://www.pexels.com/photo/a-woman-with-red-lipstick-and-black-dress-27532814" target="_blank" rel="noopener noreferrer">查看原作品 ↗</a></div><div><strong>雾散之前 · Jazmín Burela</strong><a href="https://www.pexels.com/photo/sunlight-penetrating-misty-mountain-landscape-33640729/" target="_blank" rel="noopener noreferrer">查看原作品 ↗</a></div><div><strong>岸上的日常 · Andri Wijayanto</strong><a href="https://www.pexels.com/photo/fish-market-activity-in-jakarta-harbor-38242998" target="_blank" rel="noopener noreferrer">查看原作品 ↗</a></div><div><strong>树影之间 · Tiemy Pixel</strong><a href="https://www.pexels.com/photo/portrait-of-a-woman-with-greenery-in-natural-light-33829245" target="_blank" rel="noopener noreferrer">查看原作品 ↗</a></div><div><strong>入夜以后 · Aleksandar Pasaric</strong><a href="https://www.pexels.com/photo/people-standing-beside-road-3048538" target="_blank" rel="noopener noreferrer">查看原作品 ↗</a></div><div><strong>山的另一边 · Malcolm Gillanders</strong><a href="https://www.pexels.com/photo/mountains-in-fog-near-lake-in-canada-22942809" target="_blank" rel="noopener noreferrer">查看原作品 ↗</a></div><div><strong>一起走过 · Nataliya Vaitkevich</strong><a href="https://www.pexels.com/photo/couple-walking-by-the-shore-covered-with-fog-4642008/" target="_blank" rel="noopener noreferrer">查看原作品 ↗</a></div><div><strong>城市的余光 · Plato Terentev</strong><a href="https://www.pexels.com/photo/raining-during-night-9807321/" target="_blank" rel="noopener noreferrer">查看原作品 ↗</a></div><div><strong>一片寂静 · Mikhail Nilov</strong><a href="https://www.pexels.com/photo/drone-shot-of-a-mountain-and-a-lake-8332692" target="_blank" rel="noopener noreferrer">查看原作品 ↗</a></div><div><strong>花与她 · Evellyn Cardoso</strong><a href="https://www.pexels.com/photo/model-posing-with-flowers-15693574" target="_blank" rel="noopener noreferrer">查看原作品 ↗</a></div><div><strong>生活的重量 · Thien Le Duy</strong><a href="https://www.pexels.com/photo/vietnamese-fisherman-selling-herrings-at-market-36809138" target="_blank" rel="noopener noreferrer">查看原作品 ↗</a></div><div><strong>雨未停 · Pew Nguyen</strong><a href="https://www.pexels.com/photo/people-on-the-street-on-a-rainy-day-12392818/" target="_blank" rel="noopener noreferrer">查看原作品 ↗</a></div></div>
+      <p class="small">素材已下载到项目目录，离线交付文件中已内嵌图片，无需依赖 Pexels CDN 加载。来源链接需要联网打开。正式网站应使用你拥有公开展示权的照片，并妥善处理人像肖像权与隐私。</p>
+    </section>
+  </dialog>
+  <div class="toast" id="toast" role="status" hidden></div>
+  <script>
+    (() => {
+      const frames = [...document.querySelectorAll('.frame')];
+      const viewer = document.getElementById('viewer');
+      const review = document.getElementById('review');
+      const categoryLabels = {portrait:'人像 / PORTRAIT',landscape:'风景 / LANDSCAPE',street:'街头 / STREET',humanity:'人文 / DOCUMENTARY'};
+      let activeFrames = frames.slice();
+      let viewerFrames = frames.slice();
+      let currentIndex = 0;
+      let returnFocus = null;
+      let toastTimer;
+      let restoringHash = false;
+      const cleanUrl = () => location.pathname + location.search;
+      function toast(message) { const node = document.getElementById('toast'); node.textContent = message; node.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { node.hidden = true; },3000); }
+      function filterGallery(category) {
+        frames.forEach(frame => { frame.hidden = category !== 'all' && frame.dataset.category !== category; });
+        activeFrames = frames.filter(frame => !frame.hidden);
+        document.querySelectorAll('[data-filter]').forEach(button => button.setAttribute('aria-pressed',String(button.dataset.filter === category)));
+        document.getElementById('result-count').textContent = activeFrames.length + ' 帧 · 授权示例';
+      }
+      document.querySelectorAll('[data-filter]').forEach(button => button.addEventListener('click',() => filterGallery(button.dataset.filter)));
+      document.querySelectorAll('button[data-density]').forEach(button => button.addEventListener('click',() => { document.getElementById('gallery').dataset.density = button.dataset.density; document.querySelectorAll('button[data-density]').forEach(other => other.setAttribute('aria-pressed',String(other === button))); }));
+      function drawFrame(updateHash = true) {
+        const frame = viewerFrames[currentIndex];
+        const image = frame.querySelector('img');
+        const target = document.getElementById('viewer-image');
+        target.src = image.src; target.alt = image.alt;
+        document.getElementById('viewer-title').textContent = frame.querySelector('.title').textContent;
+        document.getElementById('viewer-category').textContent = categoryLabels[frame.dataset.category] + ' · 示例摄影';
+        document.getElementById('viewer-author').textContent = '摄影：' + frame.dataset.author;
+        document.getElementById('viewer-source').href = frame.dataset.source;
+        document.getElementById('viewer-count').textContent = String(currentIndex + 1).padStart(2,'0') + ' / ' + String(viewerFrames.length).padStart(2,'0');
+        if (updateHash) history.replaceState(null,'',cleanUrl() + '#frame/' + frame.dataset.id);
+      }
+      function openFrame(id,scope = activeFrames,updateHash = true) {
+        const index = scope.findIndex(frame => frame.dataset.id === id);
+        if (index < 0) return;
+        viewerFrames = scope.slice(); currentIndex = index; returnFocus = document.activeElement;
+        drawFrame(updateHash);
+        if (!viewer.open) { viewer.showModal(); document.body.style.overflow = 'hidden'; document.getElementById('close-viewer').focus(); }
+      }
+      function closeViewer() { if (viewer.open) viewer.close(); }
+      viewer.addEventListener('close',() => { document.body.style.overflow = ''; if (!restoringHash && location.hash.startsWith('#frame/')) history.replaceState(null,'',cleanUrl() + '#collection'); restoringHash = false; if (returnFocus && returnFocus.isConnected) returnFocus.focus({preventScroll:true}); });
+      document.getElementById('close-viewer').addEventListener('click',closeViewer);
+      frames.forEach(frame => frame.querySelector('button').addEventListener('click',() => openFrame(frame.dataset.id)));
+      document.querySelector('.hero-open').addEventListener('click',event => openFrame(event.currentTarget.dataset.openId,frames));
+      function step(delta) { currentIndex = (currentIndex + delta + viewerFrames.length) % viewerFrames.length; drawFrame(); }
+      document.getElementById('previous-frame').addEventListener('click',() => step(-1));
+      document.getElementById('next-frame').addEventListener('click',() => step(1));
+      viewer.addEventListener('keydown',event => { if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') { event.preventDefault(); step(event.key === 'ArrowRight' ? 1 : -1); } });
+      let touchOrigin = null;
+      const stage = document.getElementById('viewer-stage');
+      stage.addEventListener('touchstart',event => { if (event.touches.length === 1) touchOrigin = {x:event.touches[0].clientX,y:event.touches[0].clientY}; },{passive:true});
+      stage.addEventListener('touchend',event => { if (!touchOrigin) return; const dx = event.changedTouches[0].clientX - touchOrigin.x; const dy = event.changedTouches[0].clientY - touchOrigin.y; if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) step(dx < 0 ? 1 : -1); touchOrigin = null; },{passive:true});
+      document.getElementById('toggle-info').addEventListener('click',event => { const info = document.getElementById('viewer-info'); info.hidden = !info.hidden; event.currentTarget.setAttribute('aria-pressed',String(!info.hidden)); event.currentTarget.setAttribute('aria-label',info.hidden ? '显示照片信息' : '隐藏照片信息'); });
+      document.getElementById('toggle-dark').addEventListener('click',event => { const dark = viewer.dataset.dark !== 'true'; viewer.dataset.dark = String(dark); event.currentTarget.setAttribute('aria-pressed',String(dark)); event.currentTarget.setAttribute('aria-label',dark ? '切换浅色观看' : '切换暗场观看'); });
+      document.getElementById('copy-link').addEventListener('click',async () => { if (location.protocol === 'file:') { toast('离线文件无公开地址，请在本地 HTTP 预览中复制链接'); return; } try { await navigator.clipboard.writeText(location.href); toast('已复制照片链接（当前为本地原型地址）'); } catch { toast('无法自动复制，可直接复制浏览器地址栏'); } });
+      function setReviewPanel(name) { document.querySelectorAll('[data-panel]').forEach(tab => { const selected = tab.dataset.panel === name; tab.setAttribute('aria-selected',String(selected)); tab.tabIndex = selected ? 0 : -1; }); document.querySelectorAll('.review-panel').forEach(panel => { panel.hidden = panel.id !== 'panel-' + name; }); }
+      function openReview(panel = 'design') { setReviewPanel(panel); review.showModal(); document.body.style.overflow = 'hidden'; document.getElementById('close-review').focus(); }
+      document.getElementById('open-review').addEventListener('click',() => openReview());
+      document.getElementById('open-credits').addEventListener('click',() => openReview('credits'));
+      document.getElementById('close-review').addEventListener('click',() => review.close());
+      review.addEventListener('close',() => { document.body.style.overflow = ''; });
+      review.addEventListener('click',event => { if (event.target !== review) return; const rect = review.getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) review.close(); });
+      const tabs = [...document.querySelectorAll('[data-panel]')];
+      tabs.forEach((tab,index) => { tab.addEventListener('click',() => setReviewPanel(tab.dataset.panel)); tab.addEventListener('keydown',event => { if (!['ArrowRight','ArrowLeft','Home','End'].includes(event.key)) return; event.preventDefault(); let next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length; setReviewPanel(tabs[next].dataset.panel); tabs[next].focus(); }); });
+      function readHash() { const match = location.hash.match(/^#frame\/(\d+)$/); if (match) { if (frames.some(frame => frame.dataset.id === match[1])) { if (viewer.open) { viewerFrames = frames.slice(); currentIndex = frames.findIndex(frame => frame.dataset.id === match[1]); drawFrame(false); } else openFrame(match[1],frames,false); } } else if (viewer.open) { restoringHash = true; closeViewer(); } }
+      window.addEventListener('hashchange',readHash);
+      readHash();
+    })();
+  </script>
+</body>
+</html>
